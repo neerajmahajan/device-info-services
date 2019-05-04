@@ -9,7 +9,8 @@
 * Maven 3
 * Download and unzip https://developers.redhat.com/download-manager/file/fuse-karaf-7.2.0.fuse-720035-redhat-00001.zip
 
-
+##### Building the source code.
+* Run 'mvn clean install' in device-info-services folder of source code.
 
 ##### Installing bundles into karaf container through fetaure
 * create directory test-data under fuse installation

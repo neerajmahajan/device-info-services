@@ -14,7 +14,7 @@
 ##### Installing bundles into karaf container through fetaure
 * create directory test-data under fuse installation
   * Add timezone.csv to the test-data directory
-  * The above directory name and filename are configurable and can be changed by
+  * The above directory name and filename are configurable and can be changed by changing properties in com.mycompany.date.localizer.service.cfg file stored under etc directory of fuse installation.
 * Open fuse console by launching fuse executable in bin folder of fuse-karaf-7.2.0.fuse-720035-redhat-00001 installation.
 * Run below commands on fuse console
  * feature:repo-add mvn:com.mycompany/device-services-features/1.0.0-SNAPSHOT/xml/features

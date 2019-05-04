@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the OSGi Blueprint XML file defining the Camel context and routes. 
+	Because the file is in the OSGI-INF/blueprint directory inside our JAR, it 
+	will be automatically activated as soon as the bundle is installed. The root 
+	element for any OSGi Blueprint file is 'blueprint' - you also see the namespace 
+	definitions for both the Blueprint and the Camel namespaces. -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+	xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
+	    https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd                            
+	    http://camel.apache.org/schema/blueprint 
+	    http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+    <cm:property-placeholder id="httpconsumer.placeholder" persistent-id="com.mycompany.device.info.service">
+        <cm:default-properties>
+            <cm:property name="server.host" value="localhost"/>
+            <cm:property name="server.port" value="8081"/>
+            <cm:property name="server.contextPath" value="/"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+	<camelContext id="http-consumer-context"
+		xmlns="http://camel.apache.org/schema/blueprint">
+
+		<restConfiguration component="undertow"
+				bindingMode="json" 
+				host="{{server.host}}"
+				port="{{server.port}}"
+				contextPath="{{server.contextPath}}">
+			<dataFormatProperty key="prettyPrint" value="true" />
+		</restConfiguration>
+
+		<rest path="/deviceinfo">
+			<get uri="/{deviceId}" consumes="application/json">
+				<to uri="direct:deviceDetails" />
+			</get>
+		</rest>
+		
+		<route id="http-consumer-route">
+			<from uri="direct:deviceDetails" />
+			<log message="device id value in request: $simple{in.header.deviceId}"/>
+			<setBody>
+				<simple>
+					${in.header.deviceId}
+				</simple>
+			</setBody>
+			
+			<setBody>
+				<method ref="com.mycompany.util.DateConverter"
+					method="getLocalizeDate" />
+			</setBody>
+			<log message="response from service: ${body}" />
+		</route>
+	</camelContext>
+</blueprint>

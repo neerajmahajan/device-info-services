@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name='device-info-services'>
+
+	<feature name='device-info-services' version='${project.version}'>
+		<configfile finalname="/etc/com.mycompany.device.info.service.cfg" override="true">						mvn:com.mycompany/device-services-features/${project.version}/cfg/com.mycompany.device.info.service
+		</configfile>
+		<configfile finalname="/etc/com.mycompany.date.localizer.service.cfg" override="true">						mvn:com.mycompany/device-services-features/${project.version}/cfg/com.mycompany.date.localizer.service
+		</configfile>
+
+		<feature version='${camel.version}'>camel-jackson</feature>
+		<feature version='${camel.version}'>camel-bindy</feature>
+
+		<bundle start-level="80">mvn:com.mycompany/date-localizer-service/${project.version}</bundle>
+		<bundle start-level="85">mvn:com.mycompany/device-info-service/${project.version}</bundle>
+	</feature>
+
+</features>

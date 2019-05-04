@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   This is the OSGi Blueprint XML file defining the Camel context and routes.  Because the file is in the
+   OSGI-INF/blueprint directory inside our JAR, it will be automatically activated as soon as the bundle is installed.
+
+   The root element for any OSGi Blueprint file is 'blueprint' - you also see the namespace definitions for both the Blueprint
+   and the Camel namespaces.
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0       https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd                                  http://camel.apache.org/schema/blueprint       http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+    <cm:property-placeholder id="httpconsumer.placeholder" persistent-id="com.mycompany.date.localizer.service">
+        <cm:default-properties>
+            <cm:property name="csv.poll.dir" value="test-data"/>
+            <cm:property name="csv.filename" value="timezone.csv"/>
+            <cm:property name="zone.finder.service.url" value="api.timezonedb.com/v2.1/get-time-zone?key=V2FTB5OH0POM&amp;format=json&amp;by=position&amp;lat=${body.lat}&amp;lng=${body.lng}"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+    
+    <bean class="com.mycompany.converter.DateConverterByZone" id="dateConverterByZone"/>
+    <bean class="com.mycompany.DeviceInfoFinder" id="deviceInfoFinder"/>
+    
+    <bean class="com.mycompany.util.impl.DateConverterImpl" id="dateConverter">
+        <property name="dateConversionRouteProxy" ref="dateConversionRouteProxy"/>
+    </bean>
+    <service interface="com.mycompany.util.DateConverter" ref="dateConverter"/>
+    
+    <camelContext id="date-converter-context" xmlns="http://camel.apache.org/schema/blueprint">
+        <proxy id="dateConversionRouteProxy"
+            serviceInterface="com.mycompany.route.proxy.DateConversionRouteProxy" serviceUrl="direct:dateConverterRoute"/>
+        <dataFormats>
+            <bindy id="bindyDataformat" type="Csv" classType="com.mycompany.message.CSVMessage"  />
+            <json id="jackson" library="Jackson" unmarshalTypeName="com.mycompany.message.GeocoderResponse"/>
+        </dataFormats>
+        
+        <route id="date-converter-route">
+            <from id="dateConverterEndpoint" uri="direct:dateConverterRoute"/>
+            <setProperty id="setPropertyDeviceId" propertyName="deviceId">
+                <simple>${body}</simple>
+            </setProperty>
+            <log id="logDeviceId" message="deviceId coming from service: $simple{property.deviceId}"/>
+            <transform id="readFile">
+                <simple resultType="java.io.File">{{csv.poll.dir}}/{{csv.filename}}</simple>
+            </transform>
+            <unmarshal id="unmarshalCsvData" ref="bindyDataformat"/>
+            <log id="logUnmarshalledCsvData" message="The message in service camel route contains: ${body}"/>
+            <to id="findInfoForRequestedDeviceId" uri="bean:deviceInfoFinder"/>
+            <toD id="invokeExternalApiToGetZoneInfo" uri="undertow:http://api.timezonedb.com/v2.1/get-time-zone?key=V2FTB5OH0POM&amp;format=json&amp;by=position&amp;lat=${body.lat}&amp;lng=${body.lng}"/>
+            <unmarshal id="unmarshalResponseFromExternalApi" ref="jackson"/>
+            <to id="generateLocalizedDate" uri="bean:dateConverterByZone"/>
+        </route>
+        
+    </camelContext>
+</blueprint>

@@ -1,7 +1,7 @@
 #### device-info-services
 * A set of services which provide device information through exposed REST endpoint.
 * device-info-service exposes a REST endpoint which allows client of API to get information about device. Currently API returns timezone specific date and time based on device location.
-* date-localizer-service exposes an OSGi service which takes deviceId as service argument and returns object of Response class containing localizedDate and deviceId.
+* date-localizer-service exposes an OSGi service which takes deviceId as service argument and returns object of Response class containing deviceId,localizedDate and responseMessage.
 
 #### Pre-requistes
 

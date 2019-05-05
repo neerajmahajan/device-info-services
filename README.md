@@ -25,19 +25,19 @@
 
 * Run http://localhost:8082/deviceinfo/0 in the browser or in postman app to test the API endpoint.
 * Below is the sample resposne when deviceId is found in the csv file.
- ''' 
+ ```
  {
   "deviceId" : "0",
   "localizedDate" : "16/04/2017 12:04 GMT +0000",
   "responseMessage" : "Successfully retrieved local time"
  }
- '''
+ ```
  
  * Below is the sample response when deviceId is not found in the csv file.
- '''
+ ```
  {
   "deviceId" : "100",
   "localizedDate" : null,
   "responseMessage" : "No matching record found with deviceId :100"
  }
- '''
+ ```

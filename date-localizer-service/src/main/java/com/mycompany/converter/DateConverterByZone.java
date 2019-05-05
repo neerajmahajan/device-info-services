@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mycompany.message.GeocoderResponse;
+import com.mycompany.model.Response;
 
 public class DateConverterByZone {
 
@@ -24,9 +25,12 @@ public class DateConverterByZone {
 		Date date = new Date(property);
 		simpleDateFormat.setTimeZone(TimeZone.getTimeZone(response.getZoneName()));
 		String localizedDate = simpleDateFormat.format(date);
-		
+		Response finalResponse = new Response();
+		finalResponse.setDeviceId(exchange.getProperty("deviceId",String.class));
+		finalResponse.setLocalizedDate(localizedDate);
+		finalResponse.setResponseMessage("Successfully retrieved local time");
 		logger.debug("Localized Date :{}", localizedDate);
-		exchange.getOut().setBody(localizedDate);
+		exchange.getOut().setBody(finalResponse);
 	}
 
 }

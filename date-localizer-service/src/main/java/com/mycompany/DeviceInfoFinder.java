@@ -15,8 +15,11 @@ public class DeviceInfoFinder {
 	public void process(Exchange exchange) throws Exception {
 		
 		List<CSVMessage> csvMessages = exchange.getIn().getBody(List.class);
+		boolean isMatchingRecordFound = false;
+		
 		for (CSVMessage csvMessage : csvMessages) {
 			if (csvMessage.getId().equals(exchange.getProperty("deviceId"))) {
+				isMatchingRecordFound = true;
 				exchange.setProperty("timestamp", csvMessage.getTimestamp());
 				exchange.getIn().setBody(csvMessage);
 				
@@ -25,6 +28,7 @@ public class DeviceInfoFinder {
 			}
 		}
 		
+		exchange.setProperty("MATCHING_RECORD_FOUND_IN_CSV", isMatchingRecordFound);
 	}
 
 }

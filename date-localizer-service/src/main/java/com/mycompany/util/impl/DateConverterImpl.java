@@ -22,14 +22,10 @@ public class DateConverterImpl implements DateConverter {
 
 	@Override
 	public Response getLocalizeDate(String deviceId) {
-		Response response = new Response();
 				
-		String localizedDate = dateConversionRouteProxy.getLocalizeDate(deviceId);
-		logger.debug("Final Localized Date :{}", localizedDate);
+		Response response = dateConversionRouteProxy.getLocalizeDate(deviceId);
+		logger.debug("Response from service :{}", response);
 
-		response.setDeviceId(deviceId);
-		response.setLocalizedDate(localizedDate);
-		
 		return response;
 	}
 

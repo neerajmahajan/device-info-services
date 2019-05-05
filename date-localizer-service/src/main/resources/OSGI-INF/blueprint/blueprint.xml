@@ -19,7 +19,7 @@
     
     <bean class="com.mycompany.converter.DateConverterByZone" id="dateConverterByZone"/>
     <bean class="com.mycompany.DeviceInfoFinder" id="deviceInfoFinder"/>
-    
+    <bean class="com.mycompany.NoMatchResponseGenerator" id="noMatchResponseGenerator"/>
     <bean class="com.mycompany.util.impl.DateConverterImpl" id="dateConverter">
         <property name="dateConversionRouteProxy" ref="dateConversionRouteProxy"/>
     </bean>
@@ -44,11 +44,23 @@
             </transform>
             <unmarshal id="unmarshalCsvData" ref="bindyDataformat"/>
             <log id="logUnmarshalledCsvData" message="The message in service camel route contains: ${body}"/>
+ 
             <to id="findInfoForRequestedDeviceId" uri="bean:deviceInfoFinder"/>
-            <toD id="invokeExternalApiToGetZoneInfo" uri="undertow:http://api.timezonedb.com/v2.1/get-time-zone?key=V2FTB5OH0POM&amp;format=json&amp;by=position&amp;lat=${body.lat}&amp;lng=${body.lng}"/>
-            <unmarshal id="unmarshalResponseFromExternalApi" ref="jackson"/>
-            <to id="generateLocalizedDate" uri="bean:dateConverterByZone"/>
+			<choice>
+				<when>
+					<simple>${property.MATCHING_RECORD_FOUND_IN_CSV} == 'true'</simple>
+		            <toD id="invokeExternalApiToGetZoneInfo" uri="undertow:http://api.timezonedb.com/v2.1/get-time-zone?key=V2FTB5OH0POM&amp;format=json&amp;by=position&amp;lat=${body.lat}&amp;lng=${body.lng}"/>
+		            <unmarshal id="unmarshalResponseFromExternalApi" ref="jackson"/>
+		            <to id="generateLocalizedDate" uri="bean:dateConverterByZone"/>
+				</when>
+				<otherwise>
+					<log id="logNoMatchingRecordFoundInCsv" message="No matching record found with deviceId: $simple{property.deviceId}"/>
+					<setBody>
+						<simple>No matching record found with deviceId :${property.deviceId}</simple>
+					</setBody>
+					<to id="noMatchResponseGenerator" uri="bean:noMatchResponseGenerator"/>
+            	</otherwise>
+			</choice>            
         </route>
-        
     </camelContext>
 </blueprint>

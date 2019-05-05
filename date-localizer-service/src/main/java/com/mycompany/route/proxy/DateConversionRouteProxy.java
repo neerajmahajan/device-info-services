@@ -1,5 +1,7 @@
 package com.mycompany.route.proxy;
 
+import com.mycompany.model.Response;
+
 public interface DateConversionRouteProxy {
-	String getLocalizeDate(String deviceId);
+	Response getLocalizeDate(String deviceId);
 }

@@ -3,6 +3,8 @@ package com.mycompany.model;
 public class Response {
 	private String deviceId;
 	private String localizedDate;
+	private String responseMessage;
+	
 	public String getDeviceId() {
 		return deviceId;
 	}
@@ -17,8 +19,13 @@ public class Response {
 	}
 	@Override
 	public String toString() {
-		return "Response [deviceId=" + deviceId + ", localizedDate=" + localizedDate + "]";
+		return "Response [deviceId=" + deviceId + ", localizedDate=" + localizedDate + ", responseMessage="
+				+ responseMessage + "]";
 	}
-	
-	
+	public String getResponseMessage() {
+		return responseMessage;
+	}
+	public void setResponseMessage(String responseMessage) {
+		this.responseMessage = responseMessage;
+	}
 }

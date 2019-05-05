@@ -21,7 +21,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-	<camelContext id="http-consumer-context"
+	<camelContext id="device-info-service-context"
 		xmlns="http://camel.apache.org/schema/blueprint">
 
 		<restConfiguration component="undertow"
@@ -38,7 +38,7 @@
 			</get>
 		</rest>
 		
-		<route id="http-consumer-route">
+		<route id="device-info-service-route">
 			<from uri="direct:deviceDetails" />
 			<log message="device id value in request: $simple{in.header.deviceId}"/>
 			<setBody>

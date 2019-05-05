@@ -1,7 +1,7 @@
 #### device-info-services
 * A set of services which provide device information through exposed REST endpoint.
 * device-info-service exposes a REST endpoint which allows client of API to get information about device. Currently API returns timezone specific date and time based on device location.
-* date-localizer-service exposes an OSGi service which takes deviceId as service argument and returns object of Response class containing localizedDate and deviceId.
+* date-localizer-service exposes an OSGi service which takes deviceId as service argument and returns object of Response class containing deviceId,localizedDate and responseMessage.
 
 #### Pre-requistes
 
@@ -23,4 +23,21 @@
  
 ##### Testing the service
 
-* Run http://localhost:8082/deviceinfo/0 in the browser or in postman app to test the API endpoint. 
+* Run http://localhost:8082/deviceinfo/0 in the browser or in postman app to test the API endpoint.
+* Below is the sample resposne when deviceId is found in the csv file.
+ ```
+ {
+  "deviceId" : "0",
+  "localizedDate" : "16/04/2017 12:04 GMT +0000",
+  "responseMessage" : "Successfully retrieved local time"
+ }
+ ```
+ 
+ * Below is the sample response when deviceId is not found in the csv file.
+ ```
+ {
+  "deviceId" : "100",
+  "localizedDate" : null,
+  "responseMessage" : "No matching record found with deviceId :100"
+ }
+ ```
